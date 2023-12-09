@@ -33,6 +33,34 @@ const commentHeader = `
 /* eslint-disable */
 `;
 
+const clientBody = `
+import { T{schemaName}, Z{schemaName} } from "../{schemaName}.ts";
+import { DataApi } from "@proofgeist/fmdapi";
+
+type TSchema = T{schemaName}
+const ZSchema = Z{schemaName}
+const layout = "{layoutName}"
+
+let client: ReturnType<typeof DataApi<any, TSchema>>
+export function getClient(env: any, tokenStore?: any) {
+    if (client) return client;
+    if (!env.FM_DATABASE) throw new Error("Missing env var: FM_DATABASE");
+    if (!env.FM_SERVER) throw new Error("Missing env var: FM_SERVER");
+    if (!env.FM_USERNAME) throw new Error("Missing env var: FM_USERNAME");
+    if (!env.FM_PASSWORD) throw new Error("Missing env var: FM_PASSWORD");
+    client = DataApi<any, TSchema>({
+      auth: { username: env.FM_USERNAME, password: env.FM_PASSWORD },
+      db: env.FM_DATABASE,
+      server: env.FM_SERVER,
+      layout: layout,
+      tokenStore,
+    }, {
+      fieldData: ZSchema
+    });
+    return client;
+}
+`;
+
 const importTypeStatement = (
   schemaName: string,
   hasPortals: boolean,
@@ -89,11 +117,11 @@ const exportIndexClientStatement = (schemaName: string) =>
     factory.createNamedExports([
       factory.createExportSpecifier(
         false,
-        factory.createIdentifier(`client`),
-        factory.createIdentifier(`${schemaName}Client`)
+        factory.createIdentifier(`getClient`),
+        factory.createIdentifier(`get${schemaName}Client`)
       ),
     ]),
-    factory.createStringLiteral(`./${schemaName}`),
+    factory.createStringLiteral(`./${schemaName}.ts`),
     undefined
   );
 
@@ -119,10 +147,7 @@ const undefinedTypeGuardStatement = (name: string) =>
     factory.createPrefixUnaryExpression(
       ts.SyntaxKind.ExclamationToken,
       factory.createPropertyAccessExpression(
-        factory.createPropertyAccessExpression(
-          factory.createIdentifier("process"),
-          factory.createIdentifier("env")
-        ),
+        factory.createIdentifier("env"),
         factory.createIdentifier(name)
       )
     ),
@@ -198,10 +223,7 @@ const exportClientStatement = (args: {
                                   factory.createPropertyAssignment(
                                     factory.createIdentifier("apiKey"),
                                     factory.createPropertyAccessExpression(
-                                      factory.createPropertyAccessExpression(
-                                        factory.createIdentifier("process"),
-                                        factory.createIdentifier("env")
-                                      ),
+                                      factory.createIdentifier("env"),
                                       factory.createIdentifier(
                                         args.envNames.auth.apiKey
                                       )
@@ -212,10 +234,7 @@ const exportClientStatement = (args: {
                                   factory.createPropertyAssignment(
                                     factory.createIdentifier("username"),
                                     factory.createPropertyAccessExpression(
-                                      factory.createPropertyAccessExpression(
-                                        factory.createIdentifier("process"),
-                                        factory.createIdentifier("env")
-                                      ),
+                                      factory.createIdentifier("env"),
                                       factory.createIdentifier(
                                         args.envNames.auth.username
                                       )
@@ -224,10 +243,7 @@ const exportClientStatement = (args: {
                                   factory.createPropertyAssignment(
                                     factory.createIdentifier("password"),
                                     factory.createPropertyAccessExpression(
-                                      factory.createPropertyAccessExpression(
-                                        factory.createIdentifier("process"),
-                                        factory.createIdentifier("env")
-                                      ),
+                                      factory.createIdentifier("env"),
                                       factory.createIdentifier(
                                         args.envNames.auth.password
                                       )
@@ -244,10 +260,7 @@ const exportClientStatement = (args: {
                         factory.createPropertyAssignment(
                           factory.createIdentifier("db"),
                           factory.createPropertyAccessExpression(
-                            factory.createPropertyAccessExpression(
-                              factory.createIdentifier("process"),
-                              factory.createIdentifier("env")
-                            ),
+                            factory.createIdentifier("env"),
                             factory.createIdentifier(args.envNames.db)
                           )
                         ),
@@ -258,10 +271,7 @@ const exportClientStatement = (args: {
                         factory.createPropertyAssignment(
                           factory.createIdentifier("server"),
                           factory.createPropertyAccessExpression(
-                            factory.createPropertyAccessExpression(
-                              factory.createIdentifier("process"),
-                              factory.createIdentifier("env")
-                            ),
+                            factory.createIdentifier("env"),
                             factory.createIdentifier(args.envNames.server)
                           )
                         ),
@@ -607,7 +617,7 @@ type BuildSchemaArgs = {
 const buildClientFile = (args: BuildSchemaArgs) => {
   const printer = createPrinter({ newLine: ts.NewLineKind.LineFeed });
   const file = buildClient(args);
-  return commentHeader + printer.printFile(file);
+  return commentHeader + clientBody.replace(/\{schemaName\}/g, args.schemaName).replace(/\{layoutName\}/g, args.layoutName);
 };
 export const buildSchema = ({ type, ...args }: BuildSchemaArgs) => {
   // make sure schema has unique keys, in case a field is on the layout mulitple times
