@@ -435,6 +435,7 @@ function DataApi(input, zodTypes) {
         layouts,
         scripts,
         executeScript,
+        getToken,
     };
 }
 export default DataApi;

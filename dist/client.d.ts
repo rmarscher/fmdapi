@@ -367,6 +367,7 @@ declare function DataApi<Opts extends ClientObjectProps, Td extends FieldData = 
         "scriptResult.presort"?: string | undefined;
         "scriptError.presort"?: string | undefined;
     }, "scriptResult" | "scriptError">>;
+    getToken: (refresh?: boolean, fetchOptions?: Omit<RequestInit, "method">) => Promise<string>;
 };
 export default DataApi;
 export { DataApi, FileMakerError };
