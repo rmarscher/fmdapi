@@ -644,6 +644,7 @@ function DataApi<
     layouts,
     scripts,
     executeScript,
+    getToken,
   };
 }
 
