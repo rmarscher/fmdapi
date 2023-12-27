@@ -52,14 +52,17 @@ type TSchema = T{schemaName}
 const ZSchema = Z{schemaName}
 const layout = "{layoutName}"
 
-let client: ReturnType<typeof DataApi<any, TSchema>>
-export function getClient(env: any, tokenStore?: any) {
-    if (client) return client;
-    if (!env.FM_DATABASE) throw new Error("Missing env var: FM_DATABASE");
-    if (!env.FM_SERVER) throw new Error("Missing env var: FM_SERVER");
-    if (!env.FM_USERNAME) throw new Error("Missing env var: FM_USERNAME");
-    if (!env.FM_PASSWORD) throw new Error("Missing env var: FM_PASSWORD");
-    client = DataApi<any, TSchema>({
+let client: ReturnType<typeof DataApi<ClientObjectProps, TSchema>>;
+export function getClient(
+  env: FileMakerClientEnv,
+  tokenStore?: TokenStoreDefinitions,
+) {
+  if (client) return client;
+  if (!env.FM_DATABASE) throw new Error("Missing env var: FM_DATABASE");
+  if (!env.FM_SERVER) throw new Error("Missing env var: FM_SERVER");
+  if (!env.FM_USERNAME) throw new Error("Missing env var: FM_USERNAME");
+  if (!env.FM_PASSWORD) throw new Error("Missing env var: FM_PASSWORD");
+  client = DataApi<ClientObjectProps, TSchema>({
       auth: { username: env.FM_USERNAME, password: env.FM_PASSWORD },
       db: env.FM_DATABASE,
       server: env.FM_SERVER,
@@ -234,9 +237,14 @@ schema.map((item) => {
             : stringProperty(item.name);
 })));
 const buildClientFile = (args) => {
-    const printer = createPrinter({ newLine: ts.NewLineKind.LineFeed });
-    const file = buildClient(args);
-    return commentHeader + clientBody.replace(/\{schemaName\}/g, args.schemaName).replace(/\{layoutName\}/g, args.layoutName);
+    // const printer = createPrinter({ newLine: ts.NewLineKind.LineFeed });
+    // const file = buildClient(args);
+    if (!args.clientBody) {
+        return commentHeader + clientBody.replace(/\{schemaName\}/g, args.schemaName).replace(/\{layoutName\}/g, args.layoutName);
+    }
+    else {
+        return args.clientBody.replace(/\{schemaName\}/g, args.schemaName).replace(/\{layoutName\}/g, args.layoutName);
+    }
 };
 export const buildSchema = (_a) => {
     var { type } = _a, args = __rest(_a, ["type"]);
@@ -499,6 +507,7 @@ export const generateSchemas = (options, configLocation) => __awaiter(void 0, vo
                 strictNumbers: item.strictNumbers,
                 configLocation,
                 webviewerScriptName: options.webviewerScriptName,
+                clientBody: options.clientBody,
                 envNames: {
                     auth: isOttoAuth(auth)
                         ? {

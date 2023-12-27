@@ -616,11 +616,16 @@ type BuildSchemaArgs = {
   strictNumbers?: boolean;
   configLocation?: string;
   webviewerScriptName?: string;
+  clientBody?: string;
 } & Pick<GenerateSchemaOptions, "tokenStore">;
 const buildClientFile = (args: BuildSchemaArgs) => {
-  const printer = createPrinter({ newLine: ts.NewLineKind.LineFeed });
-  const file = buildClient(args);
-  return commentHeader + clientBody.replace(/\{schemaName\}/g, args.schemaName).replace(/\{layoutName\}/g, args.layoutName);
+  // const printer = createPrinter({ newLine: ts.NewLineKind.LineFeed });
+  // const file = buildClient(args);
+  if (!args.clientBody) {
+    return commentHeader + clientBody.replace(/\{schemaName\}/g, args.schemaName).replace(/\{layoutName\}/g, args.layoutName);
+  } else {
+    return args.clientBody.replace(/\{schemaName\}/g, args.schemaName).replace(/\{layoutName\}/g, args.layoutName);
+  }
 };
 export const buildSchema = ({ type, ...args }: BuildSchemaArgs) => {
   // make sure schema has unique keys, in case a field is on the layout mulitple times
@@ -985,6 +990,10 @@ export type GenerateSchemaOptions = {
    * @link https://fm-webviewer-fetch.proofgeist.com/
    */
   webviewerScriptName?: string;
+  /**
+   * optional custom template
+   */
+  clientBody?: string;
 };
 export const generateSchemas = async (
   options: GenerateSchemaOptions,
@@ -1095,6 +1104,7 @@ export const generateSchemas = async (
       strictNumbers: item.strictNumbers,
       configLocation,
       webviewerScriptName: options.webviewerScriptName,
+      clientBody: options.clientBody,
       envNames: {
         auth: isOttoAuth(auth)
           ? {

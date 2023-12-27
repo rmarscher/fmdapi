@@ -23,6 +23,7 @@ type BuildSchemaArgs = {
     strictNumbers?: boolean;
     configLocation?: string;
     webviewerScriptName?: string;
+    clientBody?: string;
 } & Pick<GenerateSchemaOptions, "tokenStore">;
 export declare const buildSchema: ({ type, ...args }: BuildSchemaArgs) => string;
 export declare const getSchema: (args: {
@@ -74,6 +75,10 @@ export type GenerateSchemaOptions = {
      * @link https://fm-webviewer-fetch.proofgeist.com/
      */
     webviewerScriptName?: string;
+    /**
+     * optional custom template
+     */
+    clientBody?: string;
 };
 export declare const generateSchemas: (options: GenerateSchemaOptions, configLocation?: string) => Promise<void>;
 export {};
