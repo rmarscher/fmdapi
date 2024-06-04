@@ -716,9 +716,10 @@ function DataApi<
     findOne,
     findFirst,
     findAll,
+    executeScript,
     layouts,
     scripts,
-    executeScript,
+    globals,
     getToken,
   };
 }
