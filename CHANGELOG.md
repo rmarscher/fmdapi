@@ -1,5 +1,13 @@
 # @proofgeist/fmdapi
 
+## 3.4.2-playaluna.2
+
+Add attempt at implementing setting global fields
+
+## 3.4.2-playaluna.1
+
+Temp fork with updates for clientBody templates and package exports
+
 ## 3.4.2
 
 ### Patch Changes
