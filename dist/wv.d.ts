@@ -29,6 +29,7 @@ declare function DataApi<Opts extends ClientObjectProps, Td extends FieldData = 
         (): Promise<GetResponse<Td, Ud>>;
         <T extends Record<string, string | number | null> = Td, U extends Ud = Ud>(args: Opts["layout"] extends string ? import("./client-types.js").ScriptParams & import("./client-types.js").PortalRangesParams<U> & {
             "layout.response"?: string | undefined;
+            dateformats?: "US" | "file_locale" | "ISO8601" | undefined;
         } & import("./client-types.js").RangeParams & {
             sort?: import("./client-types.js").Sort<T> | import("./client-types.js").Sort<T>[] | undefined;
         } & Partial<{
@@ -40,6 +41,7 @@ declare function DataApi<Opts extends ClientObjectProps, Td extends FieldData = 
             fetch?: RequestInit | undefined;
         } : import("./client-types.js").ScriptParams & import("./client-types.js").PortalRangesParams<U> & {
             "layout.response"?: string | undefined;
+            dateformats?: "US" | "file_locale" | "ISO8601" | undefined;
         } & import("./client-types.js").RangeParams & {
             sort?: import("./client-types.js").Sort<T> | import("./client-types.js").Sort<T>[] | undefined;
         } & {
@@ -55,6 +57,7 @@ declare function DataApi<Opts extends ClientObjectProps, Td extends FieldData = 
         <T_1 extends Record<string, string | number | null> = Td, U_1 extends Ud = Ud>(): Promise<FMRecord<T_1, U_1>[]>;
         <T_2 extends Record<string, string | number | null> = Td, U_2 extends Ud = Ud>(args: Opts["layout"] extends string ? import("./client-types.js").ScriptParams & import("./client-types.js").PortalRangesParams<U_2> & {
             "layout.response"?: string | undefined;
+            dateformats?: "US" | "file_locale" | "ISO8601" | undefined;
         } & import("./client-types.js").RangeParams & {
             sort?: import("./client-types.js").Sort<T_2> | import("./client-types.js").Sort<T_2>[] | undefined;
         } & Partial<{
@@ -66,6 +69,7 @@ declare function DataApi<Opts extends ClientObjectProps, Td extends FieldData = 
             fetch?: RequestInit | undefined;
         } : import("./client-types.js").ScriptParams & import("./client-types.js").PortalRangesParams<U_2> & {
             "layout.response"?: string | undefined;
+            dateformats?: "US" | "file_locale" | "ISO8601" | undefined;
         } & import("./client-types.js").RangeParams & {
             sort?: import("./client-types.js").Sort<T_2> | import("./client-types.js").Sort<T_2>[] | undefined;
         } & {
@@ -79,6 +83,7 @@ declare function DataApi<Opts extends ClientObjectProps, Td extends FieldData = 
     };
     get: <T_3 extends Td = Td, U_3 extends Ud = Ud>(args: Opts["layout"] extends string ? import("./client-types.js").ScriptParams & import("./client-types.js").PortalRangesParams<U_3> & {
         "layout.response"?: string | undefined;
+        dateformats?: "US" | "file_locale" | "ISO8601" | undefined;
     } & {
         recordId: number | string;
     } & Partial<{
@@ -90,6 +95,7 @@ declare function DataApi<Opts extends ClientObjectProps, Td extends FieldData = 
         fetch?: RequestInit | undefined;
     } : import("./client-types.js").ScriptParams & import("./client-types.js").PortalRangesParams<U_3> & {
         "layout.response"?: string | undefined;
+        dateformats?: "US" | "file_locale" | "ISO8601" | undefined;
     } & {
         recordId: number | string;
     } & {
@@ -102,6 +108,7 @@ declare function DataApi<Opts extends ClientObjectProps, Td extends FieldData = 
     }) => Promise<GetResponse<T_3, U_3>>;
     find: <T_4 extends Td = Td, U_4 extends Ud = Ud>(args: Opts["layout"] extends string ? import("./client-types.js").ScriptParams & import("./client-types.js").PortalRangesParams<U_4> & {
         "layout.response"?: string | undefined;
+        dateformats?: "US" | "file_locale" | "ISO8601" | undefined;
     } & import("./client-types.js").RangeParams & {
         sort?: import("./client-types.js").Sort<T_4> | import("./client-types.js").Sort<T_4>[] | undefined;
     } & {
@@ -122,6 +129,7 @@ declare function DataApi<Opts extends ClientObjectProps, Td extends FieldData = 
         fetch?: RequestInit | undefined;
     } : import("./client-types.js").ScriptParams & import("./client-types.js").PortalRangesParams<U_4> & {
         "layout.response"?: string | undefined;
+        dateformats?: "US" | "file_locale" | "ISO8601" | undefined;
     } & import("./client-types.js").RangeParams & {
         sort?: import("./client-types.js").Sort<T_4> | import("./client-types.js").Sort<T_4>[] | undefined;
     } & {
@@ -143,6 +151,7 @@ declare function DataApi<Opts extends ClientObjectProps, Td extends FieldData = 
     }) => Promise<GetResponse<T_4, U_4>>;
     findOne: <T_5 extends Td = Td, U_5 extends Ud = Ud>(args: Opts["layout"] extends string ? import("./client-types.js").ScriptParams & import("./client-types.js").PortalRangesParams<U_5> & {
         "layout.response"?: string | undefined;
+        dateformats?: "US" | "file_locale" | "ISO8601" | undefined;
     } & import("./client-types.js").RangeParams & {
         sort?: import("./client-types.js").Sort<T_5> | import("./client-types.js").Sort<T_5>[] | undefined;
     } & {
@@ -157,6 +166,7 @@ declare function DataApi<Opts extends ClientObjectProps, Td extends FieldData = 
         fetch?: RequestInit | undefined;
     } : import("./client-types.js").ScriptParams & import("./client-types.js").PortalRangesParams<U_5> & {
         "layout.response"?: string | undefined;
+        dateformats?: "US" | "file_locale" | "ISO8601" | undefined;
     } & import("./client-types.js").RangeParams & {
         sort?: import("./client-types.js").Sort<T_5> | import("./client-types.js").Sort<T_5>[] | undefined;
     } & {
@@ -172,6 +182,7 @@ declare function DataApi<Opts extends ClientObjectProps, Td extends FieldData = 
     }) => Promise<GetResponseOne<T_5, U_5>>;
     findFirst: <T_6 extends Td = Td, U_6 extends Ud = Ud>(args: Opts["layout"] extends string ? import("./client-types.js").ScriptParams & import("./client-types.js").PortalRangesParams<U_6> & {
         "layout.response"?: string | undefined;
+        dateformats?: "US" | "file_locale" | "ISO8601" | undefined;
     } & import("./client-types.js").RangeParams & {
         sort?: import("./client-types.js").Sort<T_6> | import("./client-types.js").Sort<T_6>[] | undefined;
     } & {
@@ -192,6 +203,7 @@ declare function DataApi<Opts extends ClientObjectProps, Td extends FieldData = 
         fetch?: RequestInit | undefined;
     } : import("./client-types.js").ScriptParams & import("./client-types.js").PortalRangesParams<U_6> & {
         "layout.response"?: string | undefined;
+        dateformats?: "US" | "file_locale" | "ISO8601" | undefined;
     } & import("./client-types.js").RangeParams & {
         sort?: import("./client-types.js").Sort<T_6> | import("./client-types.js").Sort<T_6>[] | undefined;
     } & {
@@ -213,6 +225,7 @@ declare function DataApi<Opts extends ClientObjectProps, Td extends FieldData = 
     }) => Promise<GetResponseOne<T_6, U_6>>;
     findAll: <T_7 extends Td = Td, U_7 extends Ud = Ud>(args: Opts["layout"] extends string ? import("./client-types.js").ScriptParams & import("./client-types.js").PortalRangesParams<U_7> & {
         "layout.response"?: string | undefined;
+        dateformats?: "US" | "file_locale" | "ISO8601" | undefined;
     } & import("./client-types.js").RangeParams & {
         sort?: import("./client-types.js").Sort<T_7> | import("./client-types.js").Sort<T_7>[] | undefined;
     } & {
@@ -227,6 +240,7 @@ declare function DataApi<Opts extends ClientObjectProps, Td extends FieldData = 
         fetch?: RequestInit | undefined;
     } : import("./client-types.js").ScriptParams & import("./client-types.js").PortalRangesParams<U_7> & {
         "layout.response"?: string | undefined;
+        dateformats?: "US" | "file_locale" | "ISO8601" | undefined;
     } & import("./client-types.js").RangeParams & {
         sort?: import("./client-types.js").Sort<T_7> | import("./client-types.js").Sort<T_7>[] | undefined;
     } & {

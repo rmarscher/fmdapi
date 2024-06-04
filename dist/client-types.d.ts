@@ -15,6 +15,12 @@ export type PortalsWithIds<U extends GenericPortalData = GenericPortalData> = {
         modId: string;
     }>;
 };
+export type UpdatePortalsWithIds<U extends GenericPortalData = GenericPortalData> = {
+    [key in keyof U]: Array<U[key] & {
+        recordId: string;
+        modId?: string;
+    }>;
+};
 export declare const getFMRecordAsZod: <T extends z.AnyZodObject, U extends z.AnyZodObject>({ fieldData, portalData, }: ZInput<T, U>) => z.ZodTypeAny;
 export type FMRecord<T extends FieldData = FieldData, U extends GenericPortalData = GenericPortalData> = {
     fieldData: T;
@@ -77,14 +83,14 @@ export declare const ZDataInfo: z.ZodObject<{
     returnedCount: number;
 }>;
 export type DataInfo = z.infer<typeof ZDataInfo>;
-export type CreateParams<U> = ScriptParams & {
-    portalData?: U;
+export type CreateParams<U extends GenericPortalData = GenericPortalData> = ScriptParams & {
+    portalData?: UpdatePortalsWithIds<U>;
 };
 export type CreateResponse = ScriptResponse & {
     recordId: string;
     modId: string;
 };
-export type UpdateParams<U> = CreateParams<U> & {
+export type UpdateParams<U extends GenericPortalData = GenericPortalData> = CreateParams<U> & {
     modId?: number;
 };
 export type UpdateResponse = ScriptResponse & {
@@ -104,6 +110,7 @@ export type PortalRangesParams<U extends GenericPortalData = GenericPortalData> 
 };
 export type GetParams<U extends GenericPortalData = GenericPortalData> = ScriptParams & PortalRangesParams<U> & {
     "layout.response"?: string;
+    dateformats?: "US" | "file_locale" | "ISO8601";
 };
 export type Sort<T extends FieldData = FieldData> = {
     fieldName: keyof T;

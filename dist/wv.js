@@ -60,18 +60,11 @@ function DataApi(input, zodTypes) {
             const _a = args !== null && args !== void 0 ? args : {}, { layout = options.layout, fetch } = _a, params = __rest(_a, ["layout", "fetch"]);
             if (layout === undefined)
                 throw new Error("Must specify layout");
-            // rename and refactor limit, offset, and sort keys for this request
-            if ("limit" in params && params.limit !== undefined)
-                delete Object.assign(params, { _limit: params.limit })["limit"];
-            if ("offset" in params && params.offset !== undefined)
-                delete Object.assign(params, { _offset: params.offset })["offset"];
             if ("sort" in params && params.sort !== undefined)
-                delete Object.assign(params, {
-                    _sort: Array.isArray(params.sort) ? params.sort : [params.sort],
-                })["sort"];
+                params.sort = Array.isArray(params.sort) ? params.sort : [params.sort];
             const data = yield request({
                 layout,
-                body: {},
+                body: params,
             });
             if (zodTypes) {
                 ZGetResponse(zodTypes).parse(data);
@@ -84,11 +77,12 @@ function DataApi(input, zodTypes) {
         return __awaiter(this, void 0, void 0, function* () {
             let runningData = [];
             const limit = (_a = args === null || args === void 0 ? void 0 : args.limit) !== null && _a !== void 0 ? _a : 100;
-            let offset = (_b = args === null || args === void 0 ? void 0 : args.offset) !== null && _b !== void 0 ? _b : 0;
+            let offset = (_b = args === null || args === void 0 ? void 0 : args.offset) !== null && _b !== void 0 ? _b : 1;
             const myArgs = args !== null && args !== void 0 ? args : {};
             // eslint-disable-next-line no-constant-condition
             while (true) {
-                const data = (yield list(myArgs));
+                const data = (yield list(Object.assign(Object.assign({}, myArgs), { limit,
+                    offset })));
                 runningData = [...runningData, ...data.data];
                 if (runningData.length >= data.dataInfo.foundCount)
                     break;
@@ -225,15 +219,16 @@ function DataApi(input, zodTypes) {
         return __awaiter(this, void 0, void 0, function* () {
             let runningData = [];
             const limit = (_a = args.limit) !== null && _a !== void 0 ? _a : 100;
-            const offset = (_b = args.offset) !== null && _b !== void 0 ? _b : 0;
+            let offset = (_b = args.offset) !== null && _b !== void 0 ? _b : 1;
             // eslint-disable-next-line no-constant-condition
             while (true) {
-                const data = yield find(Object.assign(Object.assign({}, args), { ignoreEmptyResult: true }));
+                const data = yield find(Object.assign(Object.assign({}, args), { offset, ignoreEmptyResult: true }));
                 runningData = [...runningData, ...data.data];
+                console.log(data.dataInfo);
                 if (runningData.length === 0 ||
                     runningData.length >= data.dataInfo.foundCount)
                     break;
-                args.offset = offset + limit;
+                offset = offset + limit;
             }
             return runningData;
         });

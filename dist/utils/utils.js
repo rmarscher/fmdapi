@@ -11,3 +11,12 @@ export function removeFMTableNames(obj) {
     }
     return newObj;
 }
+export function isOtto3APIKey(key) {
+    return key.startsWith("KEY_");
+}
+export function isOttoFMSAPIKey(key) {
+    return key.startsWith("dk_");
+}
+export function isOttoAPIKey(key) {
+    return isOtto3APIKey(key) || isOttoFMSAPIKey(key);
+}

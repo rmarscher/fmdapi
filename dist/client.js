@@ -68,17 +68,22 @@ function DataApi(input, zodTypes) {
     const tokenStore = (_a = options.tokenStore) !== null && _a !== void 0 ? _a : memoryStore();
     const baseUrl = new URL(`${options.server}/fmi/data/vLatest/databases/${options.db}`);
     if ("apiKey" in options.auth) {
-        baseUrl.port = ((_b = options.auth.ottoPort) !== null && _b !== void 0 ? _b : 3030).toString();
+        if (options.auth.apiKey.startsWith("KEY_")) {
+            // otto v3 uses port 3030
+            baseUrl.port = ((_b = options.auth.ottoPort) !== null && _b !== void 0 ? _b : 3030).toString();
+        }
+        else if (options.auth.apiKey.startsWith("dk_")) {
+            // otto v4 uses default port, but with /otto prefix
+            baseUrl.pathname = `/otto/fmi/data/vLatest/databases/${options.db}`;
+        }
+        else {
+            throw new Error("Invalid Otto API key format. Must start with 'KEY_' (Otto v3) or 'dk_' (OttoFMS)");
+        }
     }
     function getToken(refresh = false, fetchOptions) {
         return __awaiter(this, void 0, void 0, function* () {
             if ("apiKey" in options.auth)
                 return options.auth.apiKey;
-            // if (!tokenStore) {
-            //   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            //   // @ts-ignore
-            //   tokenStore = (await import("./tokenStore/memory.js")).default();
-            // }
             if (!tokenStore)
                 throw new Error("No token store provided");
             if (!tokenStore.getKey) {
@@ -112,17 +117,31 @@ function DataApi(input, zodTypes) {
             const url = new URL(`${baseUrl}${params.url}`);
             if (query) {
                 const searchParams = new URLSearchParams(query);
-                if (query.portalRanges) {
-                    for (const [portalName, value] of Object.entries(params.portalRanges)) {
+                if (query.portalRanges && typeof query.portalRanges === "object") {
+                    for (const [portalName, value] of Object.entries(query.portalRanges)) {
                         if (value) {
                             value.offset &&
-                                searchParams.set(`${portalName}._offset`, value.offset.toString());
+                                value.offset > 0 &&
+                                searchParams.set(`_offset.${portalName}`, value.offset.toString());
                             value.limit &&
-                                searchParams.set(`${portalName}._limit`, value.limit.toString());
+                                searchParams.set(`_limit.${portalName}`, value.limit.toString());
                         }
                     }
                 }
+                searchParams.delete("portalRanges");
                 url.search = searchParams.toString();
+            }
+            if (body && "portalRanges" in body) {
+                for (const [portalName, value] of Object.entries(body.portalRanges)) {
+                    if (value) {
+                        value.offset &&
+                            value.offset > 0 &&
+                            url.searchParams.set(`_offset.${portalName}`, value.offset.toString());
+                        value.limit &&
+                            url.searchParams.set(`_limit.${portalName}`, value.limit.toString());
+                    }
+                }
+                delete body.portalRanges;
             }
             const controller = new AbortController();
             let timeout = null;
@@ -163,7 +182,7 @@ function DataApi(input, zodTypes) {
             if ("limit" in params && params.limit !== undefined)
                 delete Object.assign(params, { _limit: params.limit })["limit"];
             if ("offset" in params && params.offset !== undefined) {
-                if (params.offset === 0)
+                if (params.offset <= 1)
                     delete params.offset;
                 else
                     delete Object.assign(params, { _offset: params.offset })["offset"];
@@ -172,6 +191,17 @@ function DataApi(input, zodTypes) {
                 delete Object.assign(params, {
                     _sort: Array.isArray(params.sort) ? params.sort : [params.sort],
                 })["sort"];
+            // if ("dateformats" in params && params.dateformats !== undefined)
+            //   delete Object.assign(params, {
+            //     dateformats:
+            //       params.dateformats === "US"
+            //         ? 0
+            //         : params.dateformats === "file_locale"
+            //         ? 1
+            //         : params.dateformats === "ISO8601"
+            //         ? 2
+            //         : 0,
+            //   })["dateformats"];
             const data = yield request({
                 url: `/layouts/${layout}/records`,
                 method: "GET",
@@ -190,7 +220,7 @@ function DataApi(input, zodTypes) {
         return __awaiter(this, void 0, void 0, function* () {
             let runningData = [];
             const limit = (_a = args === null || args === void 0 ? void 0 : args.limit) !== null && _a !== void 0 ? _a : 100;
-            let offset = (_b = args === null || args === void 0 ? void 0 : args.offset) !== null && _b !== void 0 ? _b : 0;
+            let offset = (_b = args === null || args === void 0 ? void 0 : args.offset) !== null && _b !== void 0 ? _b : 1;
             // eslint-disable-next-line no-constant-condition
             while (true) {
                 const data = (yield list(Object.assign(Object.assign({}, args), { offset })));
@@ -319,6 +349,22 @@ function DataApi(input, zodTypes) {
         return __awaiter(this, void 0, void 0, function* () {
             const { query: queryInput, layout = options.layout, ignoreEmptyResult = false, timeout, fetch } = args, params = __rest(args, ["query", "layout", "ignoreEmptyResult", "timeout", "fetch"]);
             const query = !Array.isArray(queryInput) ? [queryInput] : queryInput;
+            // rename and refactor limit, offset, and sort keys for this request
+            if ("offset" in params && params.offset !== undefined) {
+                if (params.offset <= 1)
+                    delete params.offset;
+            }
+            if ("dateformats" in params && params.dateformats !== undefined) {
+                // reassign dateformats to match FileMaker's expected values
+                // @ts-expect-error FM wants a string, so this is fine
+                params.dateformats = (params.dateformats === "US"
+                    ? 0
+                    : params.dateformats === "file_locale"
+                        ? 1
+                        : params.dateformats === "ISO8601"
+                            ? 2
+                            : 0).toString();
+            }
             const data = (yield request({
                 url: `/layouts/${layout}/_find`,
                 body: Object.assign({ query }, params),
@@ -370,15 +416,15 @@ function DataApi(input, zodTypes) {
         return __awaiter(this, void 0, void 0, function* () {
             let runningData = [];
             const limit = (_a = args.limit) !== null && _a !== void 0 ? _a : 100;
-            const offset = (_b = args.offset) !== null && _b !== void 0 ? _b : 0;
+            let offset = (_b = args.offset) !== null && _b !== void 0 ? _b : 1;
             // eslint-disable-next-line no-constant-condition
             while (true) {
-                const data = yield find(Object.assign(Object.assign({}, args), { ignoreEmptyResult: true }));
+                const data = yield find(Object.assign(Object.assign({}, args), { offset, ignoreEmptyResult: true }));
                 runningData = [...runningData, ...data.data];
                 if (runningData.length === 0 ||
                     runningData.length >= data.dataInfo.foundCount)
                     break;
-                args.offset = offset + limit;
+                offset = offset + limit;
             }
             return runningData;
         });
@@ -415,6 +461,19 @@ function DataApi(input, zodTypes) {
             return (yield request({
                 url: `/scripts`,
                 method: "GET",
+            }));
+        });
+    }
+    /**
+     * Set global fields for the current session
+     *
+     * @returns
+     */
+    function globals() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return (yield request({
+                url: `/globals`,
+                method: "PATCH",
             }));
         });
     }
