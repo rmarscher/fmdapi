@@ -702,6 +702,28 @@ function DataApi<
     })) as Record<string, never>;
   }
 
+  type GlobalsArgs = {
+    globalFields: Record<string, string | number>,
+  };
+
+  /**
+   * Set global fields for the current session
+   */
+  async function globals(
+    args: Opts["layout"] extends string
+      ? GlobalsArgs & FetchOptions
+      : GlobalsArgs & FetchOptions
+  ) {
+    const { globalFields } = args;
+    return (await request({
+      url: `/globals`,
+      method: "PATCH",
+      body: { globalFields },
+      timeout: args.timeout,
+      fetchOptions: args.fetch,
+    })) as Record<string, never>;
+  }
+
   return {
     baseUrl, // returned only for testing purposes
     list,
