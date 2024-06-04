@@ -385,7 +385,15 @@ declare function DataApi<Opts extends ClientObjectProps, Td extends FieldData = 
     }, "scriptResult" | "scriptError">>;
     layouts: () => Promise<LayoutsResponse>;
     scripts: () => Promise<ScriptsMetadataResponse>;
-    globals: () => Promise<Record<string, never>>;
+    globals: (args: Opts["layout"] extends string ? {
+        globalFields: Record<string, string | number>;
+    } & {
+        fetch?: RequestInit | undefined;
+    } : {
+        globalFields: Record<string, string | number>;
+    } & {
+        fetch?: RequestInit | undefined;
+    }) => Promise<Record<string, never>>;
     getToken: (refresh?: boolean, fetchOptions?: Omit<RequestInit, "method">) => Promise<string>;
 };
 export default DataApi;

@@ -1,5 +1,13 @@
 # @proofgeist/fmdapi
 
+## 3.4.2-playaluna.4
+
+Continue attempt at implementing setting global fields
+
+## 3.4.2-playaluna.3
+
+Continue attempt at implementing setting global fields
+
 ## 3.4.2-playaluna.2
 
 Add attempt at implementing setting global fields

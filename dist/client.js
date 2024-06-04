@@ -466,14 +466,15 @@ function DataApi(input, zodTypes) {
     }
     /**
      * Set global fields for the current session
-     *
-     * @returns
      */
-    function globals() {
+    function globals(args) {
         return __awaiter(this, void 0, void 0, function* () {
+            const { globalFields } = args;
             return (yield request({
                 url: `/globals`,
                 method: "PATCH",
+                body: { globalFields },
+                fetchOptions: args.fetch,
             }));
         });
     }

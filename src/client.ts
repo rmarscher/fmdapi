@@ -690,17 +690,6 @@ function DataApi<
       method: "GET",
     })) as ScriptsMetadataResponse;
   }
-  /**
-   * Set global fields for the current session
-   *
-   * @returns
-   */
-  async function globals(): Promise<Record<string, never>> {
-    return (await request({
-      url: `/globals`,
-      method: "PATCH",
-    })) as Record<string, never>;
-  }
 
   type GlobalsArgs = {
     globalFields: Record<string, string | number>,
@@ -719,7 +708,6 @@ function DataApi<
       url: `/globals`,
       method: "PATCH",
       body: { globalFields },
-      timeout: args.timeout,
       fetchOptions: args.fetch,
     })) as Record<string, never>;
   }
