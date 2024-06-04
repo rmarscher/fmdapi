@@ -491,9 +491,10 @@ function DataApi(input, zodTypes) {
         findOne,
         findFirst,
         findAll,
+        executeScript,
         layouts,
         scripts,
-        executeScript,
+        globals,
         getToken,
     };
 }

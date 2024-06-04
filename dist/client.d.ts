@@ -353,8 +353,6 @@ declare function DataApi<Opts extends ClientObjectProps, Td extends FieldData = 
     } & {
         fetch?: RequestInit | undefined;
     }) => Promise<FMRecord<T_9, U_9>[]>;
-    layouts: () => Promise<LayoutsResponse>;
-    scripts: () => Promise<ScriptsMetadataResponse>;
     executeScript: (args: Opts["layout"] extends string ? {
         script: string;
         scriptParam?: string | undefined;
@@ -385,6 +383,9 @@ declare function DataApi<Opts extends ClientObjectProps, Td extends FieldData = 
         "scriptResult.presort"?: string | undefined;
         "scriptError.presort"?: string | undefined;
     }, "scriptResult" | "scriptError">>;
+    layouts: () => Promise<LayoutsResponse>;
+    scripts: () => Promise<ScriptsMetadataResponse>;
+    globals: () => Promise<Record<string, never>>;
     getToken: (refresh?: boolean, fetchOptions?: Omit<RequestInit, "method">) => Promise<string>;
 };
 export default DataApi;
