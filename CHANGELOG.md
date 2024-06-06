@@ -1,5 +1,9 @@
 # @proofgeist/fmdapi
 
+## 3.4.2-playaluna.5
+
+Export more types
+
 ## 3.4.2-playaluna.4
 
 Continue attempt at implementing setting global fields
