@@ -1,9 +1,9 @@
 {
-  "name": "@proofgeist/fmdapi",
-  "version": "4.0.2",
-  "description": "FileMaker Data API client",
+  "name": "@rmarscher/fmdapi",
+  "version": "4.0.2-playaluna.7",
+  "description": "Temporary personal fork of the FileMaker Data API client",
   "main": "dist/index.js",
-  "repository": "git@github.com:proofgeist/fm-dapi.git",
+  "repository": "git@github.com:rmarscher/fmdapi.git",
   "author": "Eric <37158449+eluce2@users.noreply.github.com>",
   "license": "MIT",
   "private": false,

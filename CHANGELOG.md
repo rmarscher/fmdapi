@@ -1,4 +1,8 @@
-# @proofgeist/fmdapi
+# @rmarscher/fmdapi
+
+## 4.0.2-playaluna.7
+
+Temp fork with updates for clientBody templates and type exports.
 
 ## 4.0.2
 
