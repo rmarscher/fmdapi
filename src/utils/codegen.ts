@@ -40,6 +40,28 @@ const commentHeader = `
 /* eslint-disable */
 `;
 
+const clientBody = `
+import { T{schemaName}, Z{schemaName} } from "../{schemaName}";
+import { DataApi, FetchAdapter } from "@rmarscher/fmdapi";
+if (!process.env.FM_DATABASE)
+    throw new Error("Missing env var: FM_DATABASE");
+if (!process.env.FM_SERVER)
+    throw new Error("Missing env var: FM_SERVER");
+if (!process.env.FM_USERNAME)
+    throw new Error("Missing env var: FM_USERNAME");
+if (!process.env.FM_PASSWORD)
+    throw new Error("Missing env var: FM_PASSWORD");
+export const client = DataApi<any, T{schemaName}>({
+    adapter: new FetchAdapter({
+        auth: { username: process.env.FM_USERNAME, password: process.env.FM_PASSWORD },
+        db: process.env.FM_DATABASE,
+        server: process.env.FM_SERVER
+    }),
+    layout: "{layoutName}",
+    zodValidators: { fieldData: Z{schemaName} }
+});
+`
+
 const importTypeStatement = (
   schemaName: string,
   hasPortals: boolean,
@@ -706,11 +728,16 @@ type BuildSchemaArgs = {
   strictNumbers?: boolean;
   configLocation?: string;
   webviewerScriptName?: string;
+  clientBody?: string;
 } & Pick<GenerateSchemaOptions, "tokenStore">;
 const buildClientFile = (args: BuildSchemaArgs) => {
-  const printer = createPrinter({ newLine: ts.NewLineKind.LineFeed });
-  const file = buildClient(args);
-  return commentHeader + printer.printFile(file);
+  // const printer = createPrinter({ newLine: ts.NewLineKind.LineFeed });
+  // const file = buildClient(args);
+  if (!args.clientBody) {
+    // return commentHeader + printer.printFile(file);
+    return commentHeader + clientBody.replace(/\{schemaName\}/g, args.schemaName).replace(/\{layoutName\}/g, args.layoutName);
+  }
+  return args.clientBody.replace(/\{schemaName\}/g, args.schemaName).replace(/\{layoutName\}/g, args.layoutName);
 };
 export const buildSchema = ({ type, ...args }: BuildSchemaArgs) => {
   // make sure schema has unique keys, in case a field is on the layout mulitple times
@@ -1075,6 +1102,10 @@ export type GenerateSchemaOptions = {
    * @link https://fm-webviewer-fetch.proofgeist.com/
    */
   webviewerScriptName?: string;
+  /**
+   * optional custom template
+   */
+  clientBody?: string;
 };
 export const generateSchemas = async (
   options: GenerateSchemaOptions,
@@ -1196,6 +1227,7 @@ export const generateSchemas = async (
       strictNumbers: item.strictNumbers,
       configLocation,
       webviewerScriptName: options.webviewerScriptName,
+      clientBody: options.clientBody,
       envNames: {
         auth: isOttoAuth(auth)
           ? {
