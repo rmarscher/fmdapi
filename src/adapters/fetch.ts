@@ -33,7 +33,7 @@ export class FetchAdapter extends BaseFetchAdapter {
     if (this.password === "") throw new Error("Password is required");
   }
 
-  protected getToken = async (args?: GetTokenArguments): Promise<string> => {
+  public getToken = async (args?: GetTokenArguments): Promise<string> => {
     const { refresh = false } = args ?? {};
     let token: string | null = null;
     if (!refresh) {
