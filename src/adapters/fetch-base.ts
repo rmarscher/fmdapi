@@ -175,7 +175,11 @@ export class BaseFetchAdapter implements Adapter {
     const { data, layout } = opts;
     const resp = await this.request({
       url: `/layouts/${layout}/records`,
-      query: data as Record<string, string>,
+      query: {
+        ...(data._offset !== undefined ? { _offset: data._offset.toString() } : {}),
+        ...(data._limit !== undefined ? { _limit: data._limit.toString() } : {}),
+        ...(data._sort !== undefined ? { _sort: JSON.stringify(data._sort) } : {}),
+      },
       fetchOptions: opts.fetch,
       timeout: opts.timeout,
     });
