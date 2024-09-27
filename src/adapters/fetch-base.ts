@@ -178,7 +178,7 @@ export class BaseFetchAdapter implements Adapter {
       query: {
         ...(data._offset !== undefined ? { _offset: data._offset.toString() } : {}),
         ...(data._limit !== undefined ? { _limit: data._limit.toString() } : {}),
-        ...(data._sort !== undefined ? { _sort: JSON.stringify(data) } : {}),
+        ...(data._sort !== undefined ? { _sort: JSON.stringify(data._sort) } : {}),
       },
       fetchOptions: opts.fetch,
       timeout: opts.timeout,
